@@ -2,34 +2,42 @@ import bcrypt from "bcryptjs";
 import User from "../../db/models/userModel.js";
 import { GraphQLError } from "graphql";
 import { generateToken } from "../../utils/generateToken.js";
+import Expenses from "../../db/models/expensesModel.js";
+import Income from "../../db/models/incomeModel.js";
 
 
 export default {
     Query: {
-        user: async (_, __, context) => {
+        me: async (_, __, context) => {
             // Check if user is authenticated.
             if (!context?.user) {
                 throw new GraphQLError("user not authenticated.")
             }
-            if (!context?.user?.email) {
-                throw new GraphQLError("user authentication failed")
-            }
             
             try {
-                // Find the user in database using their email.
-                const user = await User.findOne({email: context.user.email})
-                
+
+                // Find the user in database using their id.
+                const user = await User.findById(context.user.id)
+
                 // If user not found, throw an error.
                 if (!user) {
                     throw new GraphQLError("User not found")
                 }
-                return {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                }
+
+                return user
             } catch (error) {
                 throw new GraphQLError(`Error fetching user: ${error.message}`)
             }
+        },
+    }, 
+    User: {
+        expenses: async (parent) => {
+            const expenses = await Expenses.find({ user: parent.id });
+            return expenses || []
+        },
+        incomes: async (parent) => {
+            const incomes = await Income.find({ user: parent.id })
+            return incomes || []
         }
     },
     Mutation: {
@@ -42,19 +50,30 @@ export default {
             }
 
             try {
+                const normalEmail = email.toLowerCase()
+
                 // Check if email already exists.
-                const existingUser = await User.findOne({ email })
+                const existingUser = await User.findOne({ email: normalEmail })
 
                 // If user exists, throw an error.
                 if (existingUser) {
-                    throw new GraphQLError("Email already exist.")
+                    throw new GraphQLError("user already exist.")
                 }
                 
                 // Hash the password using bcryptjs.
                 const hashedPassword = await bcrypt.hash(password, 10)
+
+                // Generate a default profile picture URL using the user's first and last name
+                const profilePicture = `https://avatar.iran.liara.run/username?username=${firstName+lastName}`
                 
                 // Create a new user with the hashed password.
-                const user = new User({ firstName, lastName, email, password: hashedPassword })
+                const user = new User({
+                    firstName,
+                    lastName,
+                    email,
+                    password: hashedPassword,
+                    avatar: profilePicture
+                })
                 
                 // Save the user to the database.
                 await user.save()
@@ -63,20 +82,10 @@ export default {
                 const token = generateToken(user._id)
 
                 // Return the user and the JWT token.
-                return {
-                    user: {
-                        id: user._id,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        email:user.email,
-                    },
-                    token
-                }
+                return { user, token }
 
             } catch (error) {
-                throw new GraphQLError(`Error creating user: ${error.message}`, {
-                    extensions: { code: "INTERNAL_SERVER_ERROR" }
-                });
+                throw new GraphQLError(`Error creating user: ${error.message}`);
             }
         },
         login: async (_, { input }) => {
@@ -101,21 +110,20 @@ export default {
                 
                 // If password does not match, throw an error.
                 if (!isMatch) {
-                    throw new GraphQLError("Invalid password.")
+                    throw new GraphQLError("incorrect password.")
                 }
                 
                 // Generate a JWT token for the authenticated user.
                 const token = generateToken(user._id)
                 
                 // Return the JWT token.
-                return { token }
+                return { user, token }
 
             } catch (error) {
                 throw new GraphQLError(`Error logging in: ${error.message}`, {
                     extensions: { code: "INTERNAL_SERVER_ERROR" }
                 });
             }
-
-        }
+        },
     }
 }

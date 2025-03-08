@@ -4,12 +4,12 @@ export const userType = `
         firstName: String!
         lastName: String!
         email: String!
-        password: String!
-        createdAt: String
-        updatedAt: String
+        avatar: String!
+        expenses: [Expense!]!
+        incomes: [Income!]!
     }
     type Query {
-        user: User
+        me: User
     }
     type AuthPayload {
         user: User
@@ -18,6 +18,15 @@ export const userType = `
     type Mutation {
         signup(input: SignupInput) : AuthPayload!
         login(input: LoginInput) : AuthPayload!
+        forgetPassword(input: ForgetPasswordInput) : ForgetPasswordResponse!
+        resetPassword(input: ResetPasswordInput) : ResetPasswordResponse!
+    }
+    type ForgetPasswordResponse {
+        success: Boolean!
+        message: String!
+    }
+    type ResetPasswordResponse {
+        message: String!
     }
     input SignupInput {
         firstName: String!
@@ -29,4 +38,12 @@ export const userType = `
         email: String!
         password: String!
     }
+    input ForgetPasswordInput {
+        email: String!
+    }
+    input ResetPasswordInput {
+        token: String!
+        newPassword: String!
+    }
+
 `

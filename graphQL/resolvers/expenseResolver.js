@@ -22,6 +22,7 @@ export default {
                 throw new GraphQLError("User not authenticated.");
             }
             try {
+                const findExpense = await Expenses.find()
                 const newExpense = new Expenses({ ...input, user: context.user.id });
                 return await newExpense.save();
             } catch (error) {
@@ -34,14 +35,8 @@ export default {
                 throw new GraphQLError("User not authenticated.");
             }
             try {
-                const updatedExpense = Expenses.findOneAndUpdate(
-                    {
-                        _id: id,
-                        user: context.user.id
-                    },
-                    { $set: input },
-                    { new: true }
-                )
+                const updatedExpense = await Expenses.findOneAndUpdate({ _id: id, user: context.user.id }, { ...input }, { new: true, runValidators:true });
+
                 if (!updatedExpense) {
                     throw new GraphQLError("Expense not found or not authorized to update.");
                 }

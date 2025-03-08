@@ -1,22 +1,25 @@
 export const expenseType = `
     type Expense {
         id: ID!
-        userId: ID!
+        user: User!
         amount: Float!
-        categories: String!
-        createdAt: String
+        category: String!
     }
     type Query {
-        expenses: [Expense]
+        expenses: [Expense]!
     }
     type Mutation {
-        addExpense(input: ExpenseInput!): Expense
-        updateExpense(id: ID!, input: ExpenseInput!): Expense
+        addExpense(input: addExpenseInput!): Expense!
+        updateExpense(id: ID!, input: updateExpenseInput!): Expense!
         deleteExpense(id: ID!): Boolean
     }
-    input ExpenseInput {
+    input addExpenseInput {
         amount: Float!
-        categories: String!
+        category: String!
+    }
+    input updateExpenseInput {
+        amount: Float
+        category: String
     }
 
 `

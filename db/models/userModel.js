@@ -14,21 +14,21 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true
+    },
+    avatar: {
+        type: String,
+        required: true
     },
     password: {
         type: String,
         required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+    resetPasswordToken: {
+        type: String,
     }
-})
+},{ timestamps: true })
 
 const User = model('User', userSchema)
 

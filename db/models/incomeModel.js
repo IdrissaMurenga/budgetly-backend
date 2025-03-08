@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const { Schema, model } = mongoose;
+const { Schema, model } = mongoose
 
-const expensesSchema = new Schema({
+const incomeSchema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -15,13 +15,17 @@ const expensesSchema = new Schema({
     category: {
         type: String,
         enum: {
-            values: ['transportation', 'rent', 'utilities', 'foods'],
+            values: ['Afritic Group', 'Freelance'],
             message: '{VALUE} is not a valid expense type'
         },
         required: true
     },
-}, { timestamps: true })
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+},{ timestamps: true })
 
-const Expenses = model('expenses', expensesSchema)
+const Income = model('income', incomeSchema)
 
-export default Expenses  
+export default Income;
