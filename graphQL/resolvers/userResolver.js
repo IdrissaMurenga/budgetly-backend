@@ -33,11 +33,11 @@ export default {
     User: {
         expenses: async (parent) => {
             const expenses = await Expenses.find({ user: parent.id });
-            return expenses || []
+            return expenses 
         },
         incomes: async (parent) => {
             const incomes = await Income.find({ user: parent.id })
-            return incomes || []
+            return incomes
         }
     },
     Mutation: {
@@ -62,9 +62,6 @@ export default {
                 
                 // Hash the password using bcryptjs.
                 const hashedPassword = await bcrypt.hash(password, 10)
-
-                // Generate a default profile picture URL using the user's first and last name
-                const profilePicture = `https://avatar.iran.liara.run/username?username=${firstName+lastName}`
                 
                 // Create a new user with the hashed password.
                 const user = new User({
@@ -72,7 +69,6 @@ export default {
                     lastName,
                     email,
                     password: hashedPassword,
-                    avatar: profilePicture
                 })
                 
                 // Save the user to the database.
@@ -110,7 +106,9 @@ export default {
                 
                 // If password does not match, throw an error.
                 if (!isMatch) {
-                    throw new GraphQLError("incorrect password.")
+                    throw new GraphQLError("incorrect password.", {
+                        extensions : {code: "INVALID_CREDENTIALS"}
+                    })
                 }
                 
                 // Generate a JWT token for the authenticated user.
@@ -120,7 +118,7 @@ export default {
                 return { user, token }
 
             } catch (error) {
-                throw new GraphQLError(`Error logging in: ${error.message}`, {
+                throw new GraphQLError(error.message, {
                     extensions: { code: "INTERNAL_SERVER_ERROR" }
                 });
             }

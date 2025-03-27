@@ -4,9 +4,8 @@ export const userType = `
         firstName: String!
         lastName: String!
         email: String!
-        avatar: String!
-        expenses: [Expense!]!
-        incomes: [Income!]!
+        expenses: [Expense]
+        incomes: [Income]
     }
     type Query {
         me: User
