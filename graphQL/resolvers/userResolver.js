@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
 import User from "../../db/models/userModel.js";
 import { GraphQLError } from "graphql";
-import { generateToken } from "../../utils/generateToken.js";
 import Expenses from "../../db/models/expensesModel.js";
 import Income from "../../db/models/incomeModel.js";
+import { generateToken } from "../../utils/generateToken.js";
+import { setAuthCookie } from "../../utils/setCookie.js";
 
 
 export default {
@@ -14,34 +15,24 @@ export default {
                 throw new GraphQLError("user not authenticated.")
             }
             
-            try {
+            // Find the user in database using their id.
+            const user = await User.findById(context.user.id)
 
-                // Find the user in database using their id.
-                const user = await User.findById(context.user.id)
-
-                // If user not found, throw an error.
-                if (!user) {
-                    throw new GraphQLError("User not found")
-                }
-
-                return user
-            } catch (error) {
-                throw new GraphQLError(`Error fetching user: ${error.message}`)
+            // If user not found, throw an error.
+            if (!user) {
+                throw new GraphQLError("User not found")
             }
+
+            return user
         },
     }, 
     User: {
-        expenses: async (parent) => {
-            const expenses = await Expenses.find({ user: parent.id });
-            return expenses 
-        },
-        incomes: async (parent) => {
-            const incomes = await Income.find({ user: parent.id })
-            return incomes
-        }
+        expenses: async (parent) => await Expenses.find({ user: parent.id }),
+
+        incomes: async (parent) => await Income.find({ user: parent.id })
     },
     Mutation: {
-        signup: async (_, { input }) => {
+        signup: async (_, { input }, context) => {
             const { firstName, lastName, email, password } = input
             
             // Check if all required fields are provided.
@@ -57,7 +48,7 @@ export default {
 
                 // If user exists, throw an error.
                 if (existingUser) {
-                    throw new GraphQLError("user already exist.")
+                    throw new GraphQLError("user already exists.")
                 }
                 
                 // Hash the password using bcryptjs.
@@ -77,6 +68,10 @@ export default {
                 // Generate a JWT token for the authenticated user.
                 const token = generateToken(user._id)
 
+                // Set the JWT token as a cookie in the response.
+                setAuthCookie(context.res, token)
+
+
                 // Return the user and the JWT token.
                 return { user, token }
 
@@ -84,7 +79,7 @@ export default {
                 throw new GraphQLError(`Error creating user: ${error.message}`);
             }
         },
-        login: async (_, { input }) => {
+        login: async (_, { input }, context) => {
             const { email, password } = input
 
             // Check if all required fields are provided.
@@ -113,6 +108,9 @@ export default {
                 
                 // Generate a JWT token for the authenticated user.
                 const token = generateToken(user._id)
+
+                // Set the JWT token as a cookie in the response.
+                setAuthCookie(context.res, token)
                 
                 // Return the JWT token.
                 return { user, token }
@@ -123,5 +121,20 @@ export default {
                 });
             }
         },
+        logout: async (_, __, context) => {
+            // Extract res and user from context
+            const { res, user } = context;
+            
+            // Check if user is authenticated.
+            if (!user) {
+                throw new GraphQLError("user not authenticated.")
+            }
+
+
+            // Clear the auth-token cookie
+            res.setHeader("Set-Cookie", "auth-token=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0; Secure");
+
+            return true
+        }
     }
 }

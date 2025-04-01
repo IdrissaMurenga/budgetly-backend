@@ -17,6 +17,7 @@ export const userType = `
     type Mutation {
         signup(input: SignupInput) : AuthPayload!
         login(input: LoginInput) : AuthPayload!
+        logout: Boolean!
     }
     input SignupInput {
         firstName: String!

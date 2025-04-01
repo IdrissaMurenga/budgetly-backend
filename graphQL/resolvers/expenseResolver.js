@@ -4,9 +4,7 @@ import { GraphQLError } from "graphql";
 export default {
     Query: {
         expenses: async (_, __, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.");
-            }
+            if (!context?.user) throw new GraphQLError("User not authenticated.");
             try {
                 const expense = await Expenses.find({ user: context.user.id})
                 return expense
