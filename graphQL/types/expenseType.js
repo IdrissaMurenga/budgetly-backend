@@ -23,6 +23,7 @@ export const expenseType = `
     }
     input updateExpenseInput {
         amount: Float
+        description: String
     }
 
 `

@@ -8,7 +8,7 @@ const categorySchema = new Schema({
     },
     type: {
         type: String,
-        enum: ["expense", "income"],
+        enum: ["expense", "income", "other"],
         required: true
     },
 }, { timestamps: true })
