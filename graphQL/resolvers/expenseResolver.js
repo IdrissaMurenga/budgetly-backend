@@ -1,3 +1,4 @@
+import Category from "../../db/models/categoryModel.js";
 import Expenses from "../../db/models/expensesModel.js";
 import { GraphQLError } from "graphql";
 
@@ -6,24 +7,44 @@ export default {
         expenses: async (_, __, context) => {
             if (!context?.user) throw new GraphQLError("User not authenticated.");
             try {
-                const expense = await Expenses.find({ user: context.user.id})
+                const expense = await Expenses.find({ user: context.user.id});
                 return expense
             } catch (error) {
                 throw new GraphQLError(`Error fetching expenses: ${error.message}`);
             }
         },
     },
-
+    Expense: {
+        // user: async (parent) => {
+        //     return await User.findById(parent.user).select("-password -__v")
+        // },
+        category: async (parent) => {
+            return await Category.findById(parent.categoryId)
+        },
+    },
     Mutation: {
         addExpense: async (_, { input }, context) => {
+            const { categoryName, ...rest } = input;
             if (!context?.user) {
                 throw new GraphQLError("User not authenticated.");
             }
             try {
-                const findExpense = await Expenses.find()
-                const newExpense = new Expenses({ ...input, user: context.user.id });
+                const category = await Category.findOne({
+                    name: categoryName,
+                    user: context.user.id,
+                    type: "expense"
+                });
+
+                if (!category) {
+                    throw new GraphQLError("Category not found or not an expenses category.");
+                }
+
+                const newExpense = new Expenses({ ...rest, categoryId: category._id, user: context.user.id });
+
                 return await newExpense.save();
+
             } catch (error) {
+
                 throw new GraphQLError(`Error adding expense: ${error.message}`);
             }
         },

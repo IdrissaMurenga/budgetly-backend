@@ -1,7 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import { context } from './utils/context.js';
+import { context } from './libs/context.js';
 import { typeDefs } from './graphQL/types/index.js';
 import { createYoga, createSchema } from 'graphql-yoga';
 import { resolvers } from './graphQL/resolvers/index.js';

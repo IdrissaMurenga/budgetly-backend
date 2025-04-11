@@ -3,7 +3,10 @@ export const expenseType = `
         id: ID!
         user: User!
         amount: Float!
-        category: String!
+        description: String
+        category: Category!
+        createdAt: String!
+        updatedAt: String!
     }
     type Query {
         expenses: [Expense]!
@@ -15,11 +18,11 @@ export const expenseType = `
     }
     input addExpenseInput {
         amount: Float!
-        category: String!
+        description: String
+        categoryName: String!
     }
     input updateExpenseInput {
         amount: Float
-        category: String
     }
 
 `

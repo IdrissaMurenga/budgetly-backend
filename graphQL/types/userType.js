@@ -6,6 +6,7 @@ export const userType = `
         email: String!
         expenses: [Expense]
         incomes: [Income]
+        createdAt: String
     }
     type Query {
         me: User

@@ -3,23 +3,25 @@ export const incomeType = `
         id: ID!
         user: User!
         amount: String!
-        category: String!
+        description: String
+        category: Category!
+        createdAt: String!
+        updatedAt: String!
     }
     type Query {
         incomes: [Income]
     }
     type Mutation {
-        addIncome(input: createIncomeInput!): Income
+        addIncome(input: addIncomeInput!): Income
         updateIncome(id: ID!, input: updateIncomeInput!): Income
         deleteIncome(id: ID!): Boolean
     }
-    input createIncomeInput {
+    input addIncomeInput {
         amount: Float!
-        category: String!
+        description: String
+        categoryName: String!
     }
     input updateIncomeInput {
         amount: Float
-        category: String
     }
-
 `

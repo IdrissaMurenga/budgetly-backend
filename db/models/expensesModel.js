@@ -12,12 +12,13 @@ const expensesSchema = new Schema({
         type: Number,
         required: true
     },
-    category: {
+    description: {
         type: String,
-        enum: {
-            values: ['transportation', 'rent', 'utilities', 'foods'],
-            message: '{VALUE} is not a valid expense type'
-        },
+        required: true,
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true
     },
 }, { timestamps: true })

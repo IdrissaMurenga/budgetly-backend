@@ -1,5 +1,6 @@
 import Income from "../../db/models/incomeModel.js"
 import { GraphQLError } from "graphql"
+import Category from "../../db/models/categoryModel.js"
 
 
 export default {
@@ -9,20 +10,42 @@ export default {
                 throw new GraphQLError("User not authenticated.")
             }
             try {
-                const income = await Income.find({ user: context.user.id }) || []
+                const income = await Income.find({ user: context.user.id })
                 return income
             } catch (error) {
                 throw new GraphQLError(error.message)
             }
         }
     },
+    Income: {
+        // user: async (parent) => {
+        //     return await User.findById(parent.user).select("-password -__v")
+        // },
+        category: async (parent) => {
+            return await Category.findById(parent.categoryId)
+        },
+    },
     Mutation: {
         addIncome: async (_, { input }, context) => {
+            const { categoryName, ...rest } = input
+
             if (!context?.user) {
                 throw new GraphQLError("User not authenticated.")
             }
             try {
-                const newIncome = new Income({...input, user: context.user.id })
+                const category = await Category.findOne({
+                    name: categoryName,
+                    user: context.user.id,
+                    type: "income"
+                })
+                if (!category) {
+                    throw new GraphQLError("Category not found or not an income category.")
+                }
+                const newIncome = new Income({
+                    ...rest,
+                    categoryId: category._id,
+                    user: context.user.id
+                })
                 await newIncome.save()
                 return newIncome
             } catch (error) {

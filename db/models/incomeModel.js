@@ -8,22 +8,19 @@ const incomeSchema = new Schema({
         ref: 'User',
         required: true
     },
+    description: {
+        type: String,
+        required: true,
+    },
     amount: {
         type: Number,
         required: true
     },
-    category: {
-        type: String,
-        enum: {
-            values: ['Afritic Group', 'Freelance'],
-            message: '{VALUE} is not a valid expense type'
-        },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
 },{ timestamps: true })
 
 const Income = model('income', incomeSchema)

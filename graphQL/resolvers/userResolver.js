@@ -3,8 +3,10 @@ import User from "../../db/models/userModel.js";
 import { GraphQLError } from "graphql";
 import Expenses from "../../db/models/expensesModel.js";
 import Income from "../../db/models/incomeModel.js";
-import { generateToken } from "../../utils/generateToken.js";
-import { setAuthCookie } from "../../utils/setCookie.js";
+import { generateToken } from "../../libs/generateToken.js";
+import { setAuthCookie } from "../../libs/setCookie.js";
+import { defaultCategories } from "../../utils/defaultCategories.js";
+import Category from "../../db/models/categoryModel.js";
 
 
 export default {
@@ -28,8 +30,7 @@ export default {
     }, 
     User: {
         expenses: async (parent) => await Expenses.find({ user: parent.id }),
-
-        incomes: async (parent) => await Income.find({ user: parent.id })
+        incomes: async (parent) => await Income.find({ user: parent.id }),
     },
     Mutation: {
         signup: async (_, { input }, context) => {
@@ -71,6 +72,11 @@ export default {
                 // Set the JWT token as a cookie in the response.
                 setAuthCookie(context.res, token)
 
+                const categories = defaultCategories.map((category) => {
+                    return { ...category, user: user._id }
+                })
+
+                await Category.insertMany(categories)
 
                 // Return the user and the JWT token.
                 return { user, token }
@@ -111,6 +117,12 @@ export default {
 
                 // Set the JWT token as a cookie in the response.
                 setAuthCookie(context.res, token)
+
+                const categories = defaultCategories.map((category) => {
+                    return { ...category, user: user._id }
+                })
+
+                await Category.insertMany(categories)
                 
                 // Return the JWT token.
                 return { user, token }
