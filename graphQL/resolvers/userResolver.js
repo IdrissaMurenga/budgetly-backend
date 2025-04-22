@@ -72,17 +72,17 @@ export default {
                 // Set the JWT token as a cookie in the response.
                 setAuthCookie(context.res, token)
 
-                const categories = defaultCategories.map((category) => {
-                    return { ...category, user: user._id }
-                })
+                // const categories = defaultCategories.map((category) => {
+                //     return { ...category, user: user._id }
+                // })
 
-                await Category.insertMany(categories)
+                // await Category.insertMany(categories)
 
                 // Return the user and the JWT token.
                 return { user, token }
 
             } catch (error) {
-                throw new GraphQLError(`Error creating user: ${error.message}`);
+                throw new GraphQLError(error.message);
             }
         },
         login: async (_, { input }, context) => {
@@ -117,12 +117,6 @@ export default {
 
                 // Set the JWT token as a cookie in the response.
                 setAuthCookie(context.res, token)
-
-                const categories = defaultCategories.map((category) => {
-                    return { ...category, user: user._id }
-                })
-
-                await Category.insertMany(categories)
                 
                 // Return the JWT token.
                 return { user, token }

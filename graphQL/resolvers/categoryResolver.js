@@ -6,29 +6,16 @@ import { GraphQLError } from "graphql";
 
 export default {
     Query: {
-        categories: async (_, __, context) => {
+        categories: async (_, {type}, context) => {
             if (!context?.user) {
                 throw new GraphQLError("User not authenticated.")
             }
             try {
-                const categories = await Category.find({ user: context.user.id })
+                const categories = await Category.find({ type })
                 return categories
             } catch (error) {
                 throw new GraphQLError(error.message)
             }
         }
     },
-    // Mutation: {
-    //     addCategory: async (_, { input }, context) => {
-    //         if (!context?.user) {
-    //             throw new GraphQLError("User not authenticated.")
-    //         }
-    //         try {
-    //             const newCategory = new Category({ ...input, user: context.user.id })
-    //             return await newCategory.save()
-    //         } catch (error) {
-    //             throw new GraphQLError(error.message)
-    //         }
-    //     }
-    // }
 }

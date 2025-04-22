@@ -4,7 +4,7 @@ export const expenseType = `
         user: User!
         amount: Float!
         description: String
-        category: Category!
+        category: Category
         createdAt: String!
         updatedAt: String!
     }
@@ -19,7 +19,7 @@ export const expenseType = `
     input addExpenseInput {
         amount: Float!
         description: String
-        categoryName: String!
+        categoryId: ID!
     }
     input updateExpenseInput {
         amount: Float

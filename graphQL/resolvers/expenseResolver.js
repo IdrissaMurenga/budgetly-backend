@@ -15,23 +15,19 @@ export default {
         },
     },
     Expense: {
-        // user: async (parent) => {
-        //     return await User.findById(parent.user).select("-password -__v")
-        // },
         category: async (parent) => {
             return await Category.findById(parent.categoryId)
         },
     },
     Mutation: {
         addExpense: async (_, { input }, context) => {
-            const { categoryName, ...rest } = input;
+            const { categoryId, ...rest } = input;
             if (!context?.user) {
                 throw new GraphQLError("User not authenticated.");
             }
             try {
                 const category = await Category.findOne({
-                    name: categoryName,
-                    user: context.user.id,
+                    name: categoryId,
                     type: "expense"
                 });
 

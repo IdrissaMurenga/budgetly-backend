@@ -6,12 +6,18 @@ const categorySchema = new Schema({
         type: String,
         required: true
     },
-    type: {
+    icon: {
         type: String,
-        enum: ["expense", "income", "other"],
         required: true
     },
-}, { timestamps: true })
+    type: {
+        type: String,
+        enum: ["expense", "income"],
+        required: true
+    },
+})
+
+categorySchema.index({ name: 1, type: 1 }, { unique: true })
 
 const Category = model('Category', categorySchema)
 
