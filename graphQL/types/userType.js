@@ -6,6 +6,8 @@ export const userType = `
         email: String!
         expenses: [Expense]
         incomes: [Income]
+        salary: Salary
+        budget: Budget
         createdAt: String
     }
     type Query {

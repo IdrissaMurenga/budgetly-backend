@@ -2,6 +2,9 @@ import userResolver from "./userResolver.js";
 import expenseResolver from "./expenseResolver.js";
 import incomeResolver from "./incomeResolver.js";
 import categoryResolver from "./categoryResolver.js";
+import dashboardResolver from "./dashboardResolver.js";
+import salaryResolver from "./salaryResolver.js";
+import budgetResolver from "./budgetResolver.js";
 
 
 export const resolvers = {
@@ -9,7 +12,10 @@ export const resolvers = {
         ...userResolver.Query,
         ...expenseResolver.Query,
         ...incomeResolver.Query,
-        ...categoryResolver.Query
+        ...categoryResolver.Query,
+        ...dashboardResolver.Query,
+        ...salaryResolver.Query,
+        ...budgetResolver.Query
     },
     User: userResolver.User,
     Expense: expenseResolver.Expense,
@@ -18,6 +24,7 @@ export const resolvers = {
         ...userResolver.Mutation,
         ...expenseResolver.Mutation,
         ...incomeResolver.Mutation,
-        // ...categoryResolver.Mutation
+        ...salaryResolver.Mutation,
+        ...budgetResolver.Mutation
     }
 }

@@ -11,9 +11,6 @@ export const CategoryType =`
         type: String!
     }
     type Query {
-        categories(type: String!): [Category!]!
-    }
-    type Mutation {
-        addCategory(input: CategoryInput!): Category
+        categories : [Category!]!
     }
 `

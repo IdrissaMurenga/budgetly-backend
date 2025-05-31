@@ -1,17 +1,14 @@
-import Expenses from "../../db/models/expensesModel.js";
-import Income from "../../db/models/incomeModel.js";
 import Category from "../../db/models/categoryModel.js";
 import { GraphQLError } from "graphql";
+import { authCheck } from "../../utils/authCheck.js";
 
 
 export default {
     Query: {
-        categories: async (_, {type}, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.")
-            }
+        categories: async (_, __, context) => {
+            authCheck(context)
             try {
-                const categories = await Category.find({ type })
+                const categories = await Category.find()
                 return categories
             } catch (error) {
                 throw new GraphQLError(error.message)

@@ -5,8 +5,8 @@ import Expenses from "../../db/models/expensesModel.js";
 import Income from "../../db/models/incomeModel.js";
 import { generateToken } from "../../libs/generateToken.js";
 import { setAuthCookie } from "../../libs/setCookie.js";
-import { defaultCategories } from "../../utils/defaultCategories.js";
-import Category from "../../db/models/categoryModel.js";
+import { authCheck } from "../../utils/authCheck.js";
+import Salary from "../../db/models/salaryModel.js";
 
 
 export default {
@@ -14,7 +14,7 @@ export default {
         me: async (_, __, context) => {
             // Check if user is authenticated.
             if (!context?.user) {
-                throw new GraphQLError("user not authenticated.")
+                throw new GraphQLError('user not authenticated')
             }
             
             // Find the user in database using their id.
@@ -31,6 +31,7 @@ export default {
     User: {
         expenses: async (parent) => await Expenses.find({ user: parent.id }),
         incomes: async (parent) => await Income.find({ user: parent.id }),
+        salary: async (parent) => await Salary.findOne({user: parent.id})
     },
     Mutation: {
         signup: async (_, { input }, context) => {
@@ -71,12 +72,6 @@ export default {
 
                 // Set the JWT token as a cookie in the response.
                 setAuthCookie(context.res, token)
-
-                // const categories = defaultCategories.map((category) => {
-                //     return { ...category, user: user._id }
-                // })
-
-                // await Category.insertMany(categories)
 
                 // Return the user and the JWT token.
                 return { user, token }

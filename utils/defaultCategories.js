@@ -11,7 +11,7 @@ export const defaultCategories = [
     { name: 'Shopping', type: 'expense', icon: 'FaCartShopping' },
     { name: 'Travel', type: 'expense', icon: 'FaPlaneDeparture' },
     { name: 'Education', type: 'expense', icon: 'TbSchool' },
-    { name: 'Savings', type: 'expense', icon: 'MdSavings' },
+    { name: 'Savings', type: 'income', icon: 'MdSavings' },
     { name: 'Subscriptions', type: 'expense', icon: 'FaTv' },
     { name: 'Taxes', type: 'expense', icon: 'TbTax' },
     { name: 'Charity', type: 'expense', icon: 'FaHandsHelping' },

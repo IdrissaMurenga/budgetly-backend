@@ -1,11 +1,16 @@
 import Category from "../../db/models/categoryModel.js";
 import Expenses from "../../db/models/expensesModel.js";
 import { GraphQLError } from "graphql";
+import { authCheck } from "../../utils/authCheck.js";
+import { checkSalary } from "../../utils/checkSalary.js";
+import mongoose from "mongoose";
+
+const { ObjectId } = mongoose.Types
 
 export default {
     Query: {
         expenses: async (_, __, context) => {
-            if (!context?.user) throw new GraphQLError("User not authenticated.");
+            authCheck(context)
             try {
                 const expense = await Expenses.find({ user: context.user.id});
                 return expense
@@ -22,9 +27,7 @@ export default {
     Mutation: {
         addExpense: async (_, { input }, context) => {
             const { categoryId, ...rest } = input;
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.");
-            }
+            authCheck(context)
             try {
                 const category = await Category.findOne({
                     name: categoryId,
@@ -35,20 +38,19 @@ export default {
                     throw new GraphQLError("Category not found or not an expenses category.");
                 }
 
+                await checkSalary((new ObjectId(context.user.id)), rest.amount)
+
                 const newExpense = new Expenses({ ...rest, categoryId: category._id, user: context.user.id });
 
                 return await newExpense.save();
 
             } catch (error) {
-
-                throw new GraphQLError(`Error adding expense: ${error.message}`);
+                throw new GraphQLError(error.message);
             }
         },
 
         updateExpense: async (_, { id, input }, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.");
-            }
+            authCheck(context)
             try {
                 const updatedExpense = await Expenses.findOneAndUpdate({ _id: id, user: context.user.id }, { ...input }, { new: true, runValidators:true });
 
@@ -62,9 +64,7 @@ export default {
         },
 
         deleteExpense: async (_, { id }, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.");
-            }
+            authCheck(context)
             try {
                 const expense = await Expenses.findOneAndDelete({ _id: id, user: context.user.id });
                 if (!expense) {

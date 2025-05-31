@@ -1,14 +1,14 @@
 import Income from "../../db/models/incomeModel.js"
 import { GraphQLError } from "graphql"
 import Category from "../../db/models/categoryModel.js"
+import { authCheck } from "../../utils/authCheck.js"
+import { checkSalary } from "../../utils/checkSalary.js"
 
 
 export default {
     Query: {
         incomes: async (_, __, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.")
-            }
+            authCheck(context)
             try {
                 const income = await Income.find({ user: context.user.id })
                 return income
@@ -25,10 +25,7 @@ export default {
     Mutation: {
         addIncome: async (_, { input }, context) => {
             const { categoryId, ...rest } = input
-
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.")
-            }
+            authCheck(context)
             try {
                 const category = await Category.findOne({
                     name: categoryId,
@@ -36,6 +33,9 @@ export default {
                 })
                 if (!category) {
                     throw new GraphQLError("Category not found or not an income category.")
+                }
+                if (category.name === 'Savings') {
+                    await checkSalary(context.user.id, rest.amount)
                 }
                 const newIncome = new Income({
                     ...rest,
@@ -48,13 +48,10 @@ export default {
             }
         },
         updateIncome: async (_, { id, input }, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.")
-            }
+            authCheck(context)
             
             try {
                 const income = await Income.findByIdAndUpdate({ _id: id, user: context.user.id }, { ...input }, { new: true, runValidators: true })
-                
 
                 if (!income) {
                     throw new GraphQLError("Income not found.")
@@ -68,10 +65,7 @@ export default {
         },
 
         deleteIncome: async (_, { id }, context) => {
-            if (!context?.user) {
-                throw new GraphQLError("User not authenticated.")
-            }
-
+            authCheck(context)
             try {
                 const income = await Income.findByIdAndDelete({ _id: id, user: context.user.id })
                 if (!income) {
