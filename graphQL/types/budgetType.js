@@ -2,23 +2,22 @@ export const budgetType = `
     type Budget {
         id: ID!
         user: User!
-        amount: Float!
         month: String!
-        savingsGoal: Float!
-        createdAt: String
-        updatedAt: String
+        amount: Float!
+        isActive: Boolean
     }
 
     input BudgetInput {
-        savingsGoal: Float!
         month: String!
+        amount: Float
     }
 
-    type Query {
+    extend type Query {
         getBudget(month: String!): Budget
+        getCurrentBudget: Budget
     }
 
-    type Mutation {
+    extend type Mutation {
         setBudget(input: BudgetInput!): Budget!
     }
 `

@@ -20,6 +20,7 @@ export const expenseType = `
         amount: Float!
         description: String
         categoryId: ID!
+        budgetCategory: BudgetCategory!
     }
     input updateExpenseInput {
         amount: Float

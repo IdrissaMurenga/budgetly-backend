@@ -1,15 +1,20 @@
 export const dashBoardType = `
+    type CategorySpending {
+        categoryId: ID!
+        name: String!
+        amount: Float!
+        percentage: Float!
+        limit: Float
+    }
     type DashboardSummary {
+        # Income Summary
         totalIncomes: Float!
+        totalSalary: Float!
+        availableBlanace: Float!
+
+        # Expense Summary
         totalExpenses: Float!
-        totalSavings: Float!
-        salaryCurrentBalance: Float
-        last7days: [ChartPoint!]
-        last24hours: [ChartPoint!]
-        last30days: [ChartPoint!]
-        pieChartData: [PieSlice!]
-        budgetGoal: Float
-        budgetProgress: Float
+        topExpenseCategories: [CategorySpending!]!
     }
     type RecentActivity {
         id: ID!
@@ -18,14 +23,6 @@ export const dashBoardType = `
         category: Category
         description: String
         createdAt: String
-    }
-    type ChartPoint {
-        id: String
-        total: Float
-    }
-    type PieSlice {
-        category: Category
-        total: Float
     }
     extend type Query {
         getDashboardSummary: DashboardSummary!

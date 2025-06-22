@@ -12,14 +12,10 @@ const budgetSchema = new Schema({
         type: Number,
         required: true
     },
-    savingsGoal: {
-        type: Number,
-        required: true
-    },
     month: {
         type: String,
         required: true
-    }
+    },
 }, { timestamps: true });
 
 const Budget = model('Budget', budgetSchema)
