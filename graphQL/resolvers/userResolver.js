@@ -23,11 +23,11 @@ export default {
         },
     }, 
     Mutation: {
-        signup: async (_, { input }, context) => {
-            const { firstName, lastName, email, password } = input
-            
+        signup: async (_, { input }) => {
+            const { name, email, password } = input
+
             // Check if all required fields are provided.
-            if (!firstName || !lastName || !email || !password) {
+            if (!name || !email || !password) {
                 throw new GraphQLError("All fields are required.")
             }
 
@@ -47,8 +47,7 @@ export default {
                 
                 // Create a new user with the hashed password.
                 const user = new User({
-                    firstName,
-                    lastName,
+                    name,
                     email,
                     password: hashedPassword,
                 })
@@ -57,7 +56,7 @@ export default {
                 await user.save()
                 
                 // Generate a JWT token for the authenticated user.
-                const {accessToken, refreshToken} = generateToken(user._id)
+                const { accessToken, refreshToken } = generateToken(user._id)
 
                 // Return the user and the JWT token.
                 return { user, accessToken, refreshToken }
@@ -66,7 +65,7 @@ export default {
                 throw new GraphQLError(error.message);
             }
         },
-        login: async (_, { input }, context) => {
+        login: async (_, { input }) => {
             const { email, password } = input
 
             // Check if all required fields are provided.

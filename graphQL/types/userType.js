@@ -1,8 +1,7 @@
 export const userType = `
     type User {
         id: ID!
-        firstName: String!
-        lastName: String!
+        name: String!
         email: String!
     }
     type Query {
@@ -18,8 +17,7 @@ export const userType = `
         login(input: LoginInput) : AuthPayload!
     }
     input SignupInput {
-        firstName: String!
-        lastName: String!
+        name: String!
         email: String!
         password: String!
     }

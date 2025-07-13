@@ -1,11 +1,11 @@
-import express from 'express'
-import dotenv from 'dotenv'
 import cors from 'cors'
-import { createYoga, createSchema } from 'graphql-yoga'
-import { mongoDBconnect } from './mongoDB/connection/mongodb.js'
-import { typeDefs } from './graphQL/types/index.js'
-import { resolvers } from './graphQL/resolvers/index.js'
+import dotenv from 'dotenv'
+import express from 'express'
 import { context } from './libs/context.js'
+import { typeDefs } from './graphQL/types/index.js'
+import { createYoga, createSchema } from 'graphql-yoga'
+import { resolvers } from './graphQL/resolvers/index.js'
+import { mongoDBconnect } from './mongoDB/connection/mongodb.js'
 
 
 // load enviroment variables
